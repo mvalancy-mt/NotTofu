@@ -132,10 +132,10 @@ graph TB
     subgraph Page Components
         Home[page.tsx]
         Runs[runs/page.tsx]
-        RunDetail[runs/[id]/page.tsx]
+        RunDetail["runs/[id]/page.tsx"]
         Procedures[procedures/page.tsx]
         Stations[stations/page.tsx]
-        StationDetail[stations/[id]/page.tsx]
+        StationDetail["stations/[id]/page.tsx"]
         Analytics[analytics/page.tsx]
         Docs[docs/page.tsx]
         Settings[settings/page.tsx]
