@@ -110,14 +110,14 @@ graph TB
         ConfigFile[config.ts]
         
         subgraph "Page Routes"
-            Runs[/runs]
-            Procedures[/procedures]
-            Stations[/stations]
-            Analytics[/analytics]
-            Docs[/docs]
-            Settings[/settings]
-            Status[/status]
-            Account[/account]
+            Runs["/runs"]
+            Procedures["/procedures"]
+            Stations["/stations"]
+            Analytics["/analytics"]
+            Docs["/docs"]
+            Settings["/settings"]
+            Status["/status"]
+            Account["/account"]
         end
         
         subgraph "Components"
