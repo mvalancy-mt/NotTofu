@@ -1,4 +1,4 @@
-# NotTofu - Hardware Test Automation Manager
+# NotTofu - Test Automation Platform
 
 <div align="center">
   <img src="Logo.png" alt="NotTofu Logo" width="150" />
@@ -6,7 +6,7 @@
 
 ## Overview
 
-NotTofu is a comprehensive test management platform designed to streamline hardware testing workflows. It helps teams manage test procedures, execute test runs across different stations, collect and analyze test data, and generate insightful reports.
+NotTofu is a comprehensive test platform designed to streamline hardware testing workflows. It helps teams manage test procedures, execute test runs across different stations, collect and analyze test data, and generate insightful reports.
 
 ```mermaid
 graph TD
