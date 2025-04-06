@@ -8,13 +8,7 @@ graph TB
         RootLayout[RootLayout]
         Navigation[Navigation]
         MainContent[MainContent]
-    end
-
-    subgraph NavigationLinks
-        PrimaryNav[Primary Navigation]
-        SecondaryNav[Secondary Navigation]
-        Navigation --> PrimaryNav
-        Navigation --> SecondaryNav
+        Logo[Logo]
     end
 
     subgraph Pages
@@ -24,37 +18,65 @@ graph TB
         Procedures[Procedures Page]
         Stations[Stations Page]
         StationDetail[Station Detail Page]
+        Analytics[Analytics Page]
+        Docs[Documentation Page]
+        Settings[Settings Page]
+        Status[API Status Page]
+        Account[Account Page]
     end
 
-    subgraph Components
+    subgraph CoreComponents
+        LogoComponent[Logo Component]
+        NavComponent[Navigation Component]
+        LoadingState[Loading Component]
+        ErrorBoundary[Error Component]
+    end
+
+    subgraph UIElements
         Card[Card Components]
         Button[Button Components]
         StatusBadge[Status Badges]
         Tables[Data Tables]
+        Icons[Hero Icons]
     end
 
     RootLayout --> Navigation
     RootLayout --> MainContent
+    Navigation --> LogoComponent
     MainContent --> Pages
-    Pages --> Components
+    Pages --> UIElements
+    Pages --> LoadingState
+    Pages --> ErrorBoundary
+    Welcome --> LogoComponent
 ```
 
-## Layout Structure
+## Navigation and Layout
 
 ```mermaid
 graph TB
-    subgraph HTML Structure
-        HTML[html]
-        Body[body]
-        Root[Root Div]
-        Navigation[Navigation]
-        Main[Main Content]
+    subgraph Navigation
+        MainNav[Top Navigation Bar]
+        Logo[Logo + App Name]
+        NavLinks[Navigation Links]
+        NavIcons[Navigation Icons]
     end
 
-    HTML --> Body
-    Body --> Root
-    Root --> Navigation
-    Root --> Main
+    subgraph NavItems
+        Home[Home]
+        Runs[Test Runs]
+        Procedures[Procedures]
+        Stations[Stations]
+        Analytics[Analytics]
+        Docs[Documentation]
+        Settings[Settings]
+        Status[API Status]
+        Account[Account]
+    end
+
+    MainNav --> Logo
+    MainNav --> NavLinks
+    NavLinks --> NavIcons
+    NavLinks --> NavItems
 ```
 
 ## File Structure
@@ -63,7 +85,11 @@ graph TB
 frontend/
 ├── app/
 │   ├── layout.tsx           # Root layout with navigation
-│   ├── page.tsx             # Welcome page
+│   ├── page.tsx             # Welcome page with centered logo
+│   ├── loading.tsx          # Global loading component
+│   ├── error.tsx            # Global error component
+│   ├── config.ts            # Configuration including API URL
+│   ├── globals.css          # Global styles
 │   ├── runs/
 │   │   ├── page.tsx         # Test runs list
 │   │   └── [id]/
@@ -74,115 +100,117 @@ frontend/
 │   │   ├── page.tsx         # Stations page
 │   │   └── [id]/
 │   │       └── page.tsx     # Station detail
-│   └── globals.css          # Global styles
+│   ├── analytics/
+│   │   └── page.tsx         # Analytics dashboard
+│   ├── docs/
+│   │   └── page.tsx         # Documentation page
+│   ├── settings/
+│   │   └── page.tsx         # Settings page
+│   ├── status/
+│   │   └── page.tsx         # API status page
+│   └── account/
+│       └── page.tsx         # Account management
 ├── components/
+│   ├── Logo.tsx             # Logo component
 │   └── Navigation.tsx       # Navigation component
 ├── tailwind.config.js       # Tailwind configuration
 └── package.json             # Dependencies
 ```
 
-## Component Dependencies
+## Component Hierarchy
 
 ```mermaid
 graph TB
     subgraph Core Components
-        Navigation[Navigation]
-        Card[Card Components]
-        Button[Button Components]
-        StatusBadge[Status Badges]
+        Layout[layout.tsx]
+        Navigation[Navigation.tsx]
+        Logo[Logo.tsx]
+        Loading[loading.tsx]
+        Error[error.tsx]
     end
 
     subgraph Page Components
-        Welcome[Welcome Page]
-        Runs[Test Runs Page]
-        RunDetail[Run Detail]
-        Procedures[Procedures Page]
-        Stations[Stations Page]
-        StationDetail[Station Detail]
+        Home[page.tsx]
+        Runs[runs/page.tsx]
+        RunDetail[runs/[id]/page.tsx]
+        Procedures[procedures/page.tsx]
+        Stations[stations/page.tsx]
+        StationDetail[stations/[id]/page.tsx]
+        Analytics[analytics/page.tsx]
+        Docs[docs/page.tsx]
+        Settings[settings/page.tsx]
+        Status[status/page.tsx]
+        Account[account/page.tsx]
     end
 
-    Welcome --> Card
-    Welcome --> Button
-    
-    Runs --> Card
-    Runs --> Button
-    Runs --> StatusBadge
-    
-    RunDetail --> Card
-    RunDetail --> Button
-    RunDetail --> StatusBadge
-    
-    Procedures --> Card
-    Procedures --> Button
-    Procedures --> StatusBadge
-    
-    Stations --> Card
-    Stations --> Button
-    Stations --> StatusBadge
-    
-    StationDetail --> Card
-    StationDetail --> Button
-    StationDetail --> StatusBadge
+    Layout --> Navigation
+    Navigation --> Logo
+    Layout --> Home
+    Layout --> Runs
+    Layout --> RunDetail
+    Layout --> Procedures
+    Layout --> Stations
+    Layout --> StationDetail
+    Layout --> Analytics
+    Layout --> Docs
+    Layout --> Settings
+    Layout --> Status
+    Layout --> Account
+    Layout --> Loading
+    Layout --> Error
+    Home --> Logo
 ```
 
-## Styling System
+## Homepage Structure
 
 ```mermaid
 graph TB
-    subgraph Styles
-        Tailwind[Tailwind CSS]
-        Global[Global Styles]
-        ThemeColors[Theme Colors]
+    subgraph HomePage
+        HeroSection[Hero Section]
+        NavGrid[Navigation Grid]
+        APIStatus[API Status Section]
     end
-
-    subgraph Components
-        Cards[Card Styles]
-        Buttons[Button Styles]
-        Forms[Form Elements]
-        Tables[Table Styles]
+    
+    subgraph HeroSection
+        CenteredLogo[Centered Logo]
+        Title[App Title]
+        Description[App Description]
     end
-
-    Tailwind --> Global
-    Tailwind --> ThemeColors
-    ThemeColors --> Cards
-    ThemeColors --> Buttons
-    ThemeColors --> Forms
-    ThemeColors --> Tables
+    
+    subgraph NavGrid
+        HomeCard[Home Card]
+        RunsCard[Test Runs Card]
+        ProceduresCard[Procedures Card]
+        StationsCard[Stations Card]
+        AnalyticsCard[Analytics Card]
+        DocsCard[Documentation Card]
+        SettingsCard[Settings Card]
+        APIStatusCard[API Status Card]
+    end
+    
+    HeroSection --> CenteredLogo
+    HeroSection --> Title
+    HeroSection --> Description
+    NavGrid --> HomeCard & RunsCard & ProceduresCard & StationsCard
+    NavGrid --> AnalyticsCard & DocsCard & SettingsCard & APIStatusCard
+    HomePage --> HeroSection
+    HomePage --> NavGrid
+    HomePage --> APIStatus
 ```
 
-## Key Features
-
-1. **Layout System**
-   - Top navigation bar with responsive design
-   - Consistent page layout with proper spacing
-   - Content sections with cards and containers
-
-2. **Navigation**
-   - Primary navigation links with icons
-   - Active state highlighting
-   - Secondary navigation for settings
-
-3. **Components**
-   - Card components for content grouping
-   - Status badges (success, error, active)
-   - Button components with different variants
-   - Form input components
-
-4. **Pages**
-   - Welcome page with feature overview
-   - Test runs list with filtering
-   - Detailed run view with phases and logs
-   - Procedures overview with categorization
-   - Stations list and detailed station view
-
-## UI State Flow
+## UI Interaction Flow
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Welcome
-    Welcome --> Runs: Navigate
-    Welcome --> Procedures: Navigate
-    Welcome --> Stations: Navigate
+    [*] --> HomePage
+    HomePage --> Runs: Navigate
+    HomePage --> Procedures: Navigate
+    HomePage --> Stations: Navigate
+    HomePage --> Analytics: Navigate
+    HomePage --> Docs: Navigate
+    HomePage --> Settings: Navigate
+    HomePage --> Status: Navigate
+    HomePage --> Account: Navigate
     
     state Runs {
         [*] --> RunsList
@@ -193,31 +221,62 @@ stateDiagram-v2
         [*] --> StationsList
         StationsList --> StationDetail: Select Station
     }
-    
-    state Procedures {
-        [*] --> ProceduresList
-        ProceduresList --> ProcedureDetail: Select Procedure
-    }
 ```
 
-## Development Priorities
+## Styling System
 
-1. **Current Status**
-   - ✅ Page layout with navigation
-   - ✅ Welcome page
-   - ✅ Test runs list and detail view
+```mermaid
+graph TB
+    subgraph Styles
+        Tailwind[Tailwind CSS]
+        Global[Global Styles]
+        ThemeColors[Theme Colors]
+        HeroIcons[Hero Icons]
+    end
+
+    subgraph Components
+        Cards[Card Styles]
+        Buttons[Button Styles]
+        Forms[Form Elements]
+        Tables[Table Styles]
+        NavStyles[Navigation Styles]
+        LogoStyles[Logo Styles]
+    end
+
+    Tailwind --> Global
+    Tailwind --> ThemeColors
+    ThemeColors --> Cards
+    ThemeColors --> Buttons
+    ThemeColors --> Forms
+    ThemeColors --> Tables
+    ThemeColors --> NavStyles
+    ThemeColors --> LogoStyles
+    HeroIcons --> NavStyles
+    HeroIcons --> Cards
+```
+
+## Implementation Status
+
+1. **Completed Features**
+   - ✅ Navigation system with all page links
+   - ✅ Logo component with adjustable size
+   - ✅ Home page with centered logo and navigation grid
+   - ✅ Test runs pages
    - ✅ Procedures page
-   - ✅ Stations page and detail view
-   - ✅ Consistent styling with Tailwind
+   - ✅ Stations pages
+   - ✅ API Status page
+   - ✅ Error and loading states
 
-2. **Next Steps**
-   - Improved form components
-   - Advanced filtering and search
-   - Data visualization components
-   - Mobile responsiveness enhancements
+2. **In Progress**
+   - 🔄 Analytics dashboard
+   - 🔄 Documentation system
+   - 🔄 Settings page
+   - 🔄 Account management
+   - 🔄 Mobile responsiveness
 
-3. **Upcoming Features**
-   - Authentication and user profiles
+3. **Planned Features**
+   - Authentication system
+   - Advanced filtering
+   - Data export
    - Real-time updates
-   - Customizable dashboards
-   - Export and report generation 
+   - Customizable dashboard 

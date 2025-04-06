@@ -32,113 +32,42 @@ graph TB
     API --> TR & TP & M & S & P
 ```
 
-## Current Focus Areas
+## Application Structure
 
 ```mermaid
 graph TB
-    subgraph "Priority 1: UI Enhancements"
-        style Priority1 fill:#4ade80,stroke:#333,stroke-width:2px
-        UserExp[User Experience]
-        Components[Component Library]
-        Responsive[Responsive Design]
+    subgraph "Frontend Application"
+        HPage[Home Page]
+        RunsPage[Test Runs Page]
+        ProcPage[Procedures Page]
+        StatPage[Stations Page]
+        AnalPage[Analytics Page]
+        DocPage[Documentation Page]
+        SetPage[Settings Page]
+        ApiPage[API Status Page]
+        AccPage[Account Page]
         
-        UserExp --> Components
-        Responsive --> Components
+        Nav[Navigation Component]
+        Logo[Logo Component]
+        
+        Nav --> HPage & RunsPage & ProcPage & StatPage & AnalPage & DocPage & SetPage & ApiPage & AccPage
+        Logo --> Nav
     end
 
-    subgraph "Priority 2: Feature Implementation"
-        Authentication[User Authentication]
-        Search[Search & Filtering]
-        Export[Export & Reporting]
+    subgraph "Page Structure"
+        MainLayout[Main Layout]
+        ContentArea[Content Area]
+        ErrorBoundary[Error Handling]
+        LoadingState[Loading States]
+        
+        MainLayout --> Nav
+        MainLayout --> ContentArea
+        ContentArea --> ErrorBoundary
+        ContentArea --> LoadingState
     end
-
-    subgraph "Priority 3: Advanced Features"
-        Analytics[Analytics Dashboard]
-        RT[Real-time Updates]
-        Integration[API Integration]
-    end
-
-    Priority1 --> Priority2
-    Priority2 --> Priority3
 ```
 
-## Data Architecture
-
-```mermaid
-erDiagram
-    TestRun {
-        string id PK
-        string name
-        enum status
-        json metadata
-        datetime timestamp
-        float duration
-        string station_id FK
-        string procedure_id FK
-    }
-
-    TestPhase {
-        string id PK
-        string name
-        enum status
-        float duration
-        string test_run_id FK
-    }
-
-    Measurement {
-        string id PK
-        string name
-        float value
-        string unit
-        string expected
-        enum status
-        string phase_id FK
-    }
-
-    Station {
-        string id PK
-        string name
-        string location
-        enum status
-    }
-
-    Procedure {
-        string id PK
-        string name
-        string description
-        enum category
-    }
-
-    TestRun ||--o{ TestPhase : "has"
-    TestPhase ||--o{ Measurement : "contains"
-    Station ||--o{ TestRun : "runs"
-    Procedure ||--o{ TestRun : "defines"
-```
-
-## Implementation Status
-
-### Frontend (Active Development)
-1. **Completed**
-   - ✅ Page layout with navigation
-   - ✅ Welcome page
-   - ✅ Test runs list and detail view
-   - ✅ Procedures page
-   - ✅ Stations page and detail view
-   - ✅ Consistent styling with Tailwind
-
-2. **In Progress**
-   - 🔄 Improved form components
-   - 🔄 Data visualization
-   - 🔄 Advanced filtering
-   - 🔄 Mobile optimizations
-
-3. **Planned**
-   - Authentication and user management
-   - Export and reporting
-   - Customizable dashboard
-   - Real-time updates
-
-### Data Flow
+## Data Flow
 
 ```mermaid
 sequenceDiagram
@@ -163,7 +92,76 @@ sequenceDiagram
     API->>DB: Query Station
     DB-->>API: Return Station Details
     API-->>UI: JSON Response
+    
+    Note over UI,API: API Status Check
+    UI->>API: GET /status
+    API-->>UI: System Health Status
 ```
+
+## Current Architecture Implementation
+
+```mermaid
+graph TB
+    subgraph "Frontend Structure"
+        Layout[layout.tsx]
+        HomePage[page.tsx]
+        LoadingPage[loading.tsx]
+        ErrorPage[error.tsx]
+        ConfigFile[config.ts]
+        
+        subgraph "Page Routes"
+            Runs[/runs]
+            Procedures[/procedures]
+            Stations[/stations]
+            Analytics[/analytics]
+            Docs[/docs]
+            Settings[/settings]
+            Status[/status]
+            Account[/account]
+        end
+        
+        subgraph "Components"
+            LogoComp[Logo.tsx]
+            NavComp[Navigation.tsx]
+        end
+        
+        Layout --> HomePage
+        Layout --> Runs & Procedures & Stations & Analytics & Docs & Settings & Status & Account
+        Layout --> NavComp
+        NavComp --> LogoComp
+        HomePage --> LogoComp
+    end
+    
+    style Layout fill:#f9f,stroke:#333,stroke-width:2px
+    style HomePage fill:#bbf,stroke:#333,stroke-width:2px
+    style NavComp fill:#bfb,stroke:#333,stroke-width:2px
+    style LogoComp fill:#bfb,stroke:#333,stroke-width:2px
+```
+
+## Implementation Status
+
+### Frontend (Active Development)
+1. **Completed**
+   - ✅ Page layout with navigation
+   - ✅ Welcome page with centered logo
+   - ✅ Test runs list and detail view
+   - ✅ Procedures page
+   - ✅ Stations page and detail view
+   - ✅ API Status page
+   - ✅ Consistent styling with Tailwind
+
+2. **In Progress**
+   - 🔄 Account management
+   - 🔄 Analytics dashboard
+   - 🔄 Documentation system
+   - 🔄 Settings page
+   - 🔄 Mobile optimizations
+
+3. **Planned**
+   - Authentication and user management
+   - Export and reporting
+   - Customizable dashboard
+   - Real-time updates
 
 ## Development Workflow
 

@@ -4,18 +4,18 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:root": "next dev -p 3001",
+    "dev:backend": "cd app && cross-env NOTTOFU_PORT=8000 python -c \"import uvicorn; uvicorn.run('main:app', host='0.0.0.0', port=8000, reload=True)\"",
     "dev:frontend": "cd frontend && npm run dev",
-    "dev:all": "concurrently \"npm run dev:root\" \"npm run dev:frontend\"",
+    "dev:all": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "setup": "powershell -ExecutionPolicy Bypass -File .\\setup.ps1",
     "setup:unix": "bash ./setup.sh",
-    "start": "node -e \"require('os').platform() === 'win32' ? process.platform === 'win32' && process.env.TERM === 'msys' ? require('child_process').spawn('bash', ['./start.sh'], {stdio:'inherit'}) : require('child_process').spawn('cmd.exe', ['/c', 'start.bat'], {stdio:'inherit'}) : require('child_process').spawn('bash', ['./start.sh'], {stdio:'inherit'})\"",
-    "start:win": "powershell -ExecutionPolicy Bypass -File .\\start.ps1",
+    "start": "node -e \"require('os').platform() === 'win32' ? require('child_process').spawn('cmd.exe', ['/c', 'start.bat'], {stdio:'inherit'}) : require('child_process').spawn('bash', ['./start.sh'], {stdio:'inherit'})\"",
+    "start:win": "start.bat",
     "start:unix": "bash ./start.sh",
     "build": "next build",
     "build:all": "npm run build && cd frontend && npm run build",
     "start:prod": "next start",
-    "start:all": "concurrently \"next start -p 3001\" \"cd frontend && npm run start\"",
+    "start:all": "concurrently \"cd app && cross-env NOTTOFU_PORT=8000 python -c \\\"import uvicorn; uvicorn.run('main:app', host='0.0.0.0', port=8000)\\\"\" \"cd frontend && npm run start\"",
     "lint": "next lint",
     "lint:all": "npm run lint && cd frontend && npm run lint"
   },
@@ -33,6 +33,7 @@
   "devDependencies": {
     "autoprefixer": "^10.4.17",
     "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
     "postcss": "^8.4.35"
   }
 }

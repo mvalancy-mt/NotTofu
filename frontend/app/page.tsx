@@ -1,139 +1,110 @@
-import { redirect } from 'next/navigation'
-import { 
-  BeakerIcon, 
-  ClipboardDocumentListIcon, 
-  CubeIcon,
-  BookOpenIcon
+'use client'
+
+import Link from 'next/link'
+import Image from 'next/image'
+import { API_URL } from './config'
+import {
+  HomeIcon,
+  BeakerIcon,
+  ClipboardDocumentListIcon,
+  ComputerDesktopIcon,
+  DocumentTextIcon,
+  ChartBarIcon,
+  UserGroupIcon,
+  BookOpenIcon,
+  Cog6ToothIcon,
+  ServerIcon,
 } from '@heroicons/react/24/outline'
 
-export default function WelcomePage() {
+export default function Home() {
+  const navLinks = [
+    { 
+      href: '/runs', 
+      label: 'Test Runs', 
+      icon: ClipboardDocumentListIcon, 
+      description: 'View and manage test runs, check results and analyze failures'
+    },
+    { 
+      href: '/procedures', 
+      label: 'Procedures', 
+      icon: DocumentTextIcon, 
+      description: 'Create and manage test procedures and test steps'
+    },
+    { 
+      href: '/stations', 
+      label: 'Stations', 
+      icon: ComputerDesktopIcon, 
+      description: 'Configure test stations and manage station settings'
+    },
+    { 
+      href: '/analytics', 
+      label: 'Analytics', 
+      icon: ChartBarIcon, 
+      description: 'View test analytics, charts, and performance metrics'
+    },
+    { 
+      href: '/docs', 
+      label: 'Documentation', 
+      icon: BookOpenIcon, 
+      description: 'Browse platform documentation and guides'
+    },
+    { 
+      href: '/settings', 
+      label: 'Settings', 
+      icon: Cog6ToothIcon, 
+      description: 'Configure application settings and preferences'
+    },
+    { 
+      href: '/status', 
+      label: 'API Status', 
+      icon: ServerIcon, 
+      description: 'Check backend API connection status and server information'
+    },
+  ]
+
   return (
-    <div className="bg-gray-50 h-full">
-      <div className="max-w-7xl mx-auto">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-bold text-gray-900 py-6">Welcome to NotTofu</h1>
-          
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Card 1 */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <BeakerIcon className="h-4 w-4 text-gray-400" />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        Create an API key
-                      </dt>
-                      <dd>
-                        <div className="text-xs font-medium text-gray-900">
-                          Connect your testing software with the NotTofu backend
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-5 py-3">
-                <div className="text-xs">
-                  <a href="/api-keys" className="font-medium text-blue-700 hover:text-blue-900">
-                    Create key
-                  </a>
-                </div>
-              </div>
-            </div>
+    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <div className="text-center mb-12">
+        <div className="flex justify-center mb-4">
+          <Image 
+            src="/Logo.png" 
+            alt="NotTofu Logo" 
+            width={150} 
+            height={150} 
+            className="rounded-full border-4 border-blue-100 shadow-lg"
+          />
+        </div>
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">NotTofu Test Management Platform</h1>
+        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          Simplify your testing workflow with our comprehensive test management solution.
+        </p>
+      </div>
 
-            {/* Card 2 */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <ClipboardDocumentListIcon className="h-4 w-4 text-gray-400" />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        Train in simulator
-                      </dt>
-                      <dd>
-                        <div className="text-xs font-medium text-gray-900">
-                          Practice with the NotTofu interface using simulated data
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-12">
+        {navLinks.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="block group bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all p-6"
+          >
+            <div className="flex items-center mb-3">
+              <div className="bg-blue-100 rounded-md p-2 mr-4 group-hover:bg-blue-200 transition-colors">
+                {link.icon && <link.icon className="h-6 w-6 text-blue-600" />}
               </div>
-              <div className="bg-gray-50 px-5 py-3">
-                <div className="text-xs">
-                  <a href="/simulator" className="font-medium text-blue-700 hover:text-blue-900">
-                    Start simulator
-                  </a>
-                </div>
-              </div>
+              <h2 className="text-xl font-semibold text-gray-900">{link.label}</h2>
             </div>
+            <p className="text-gray-600">{link.description}</p>
+          </Link>
+        ))}
+      </div>
 
-            {/* Card 3 */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <CubeIcon className="h-3 w-3 text-gray-400" />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        Explore the cockpit
-                      </dt>
-                      <dd>
-                        <div className="text-xs font-medium text-gray-900">
-                          Check out the main features of the NotTofu dashboard
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-5 py-3">
-                <div className="text-xs">
-                  <a href="/dashboard" className="font-medium text-blue-700 hover:text-blue-900">
-                    View dashboard
-                  </a>
-                </div>
-              </div>
-            </div>
-            
-            {/* Card 4 - Documentation */}
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <BookOpenIcon className="h-4 w-4 text-gray-400" />
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        Read the docs
-                      </dt>
-                      <dd>
-                        <div className="text-xs font-medium text-gray-900">
-                          Access user guides and technical documentation
-                        </div>
-                      </dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gray-50 px-5 py-3">
-                <div className="text-xs">
-                  <a href="/docs" className="font-medium text-blue-700 hover:text-blue-900">
-                    View documentation
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div className="bg-blue-50 rounded-lg p-6 border border-blue-100">
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Backend API</h2>
+        <p className="text-gray-600 mb-2">
+          Make sure the backend server is running before using the application.
+        </p>
+        <div className="bg-gray-100 rounded p-2 font-mono text-sm">
+          {API_URL}
         </div>
       </div>
     </div>

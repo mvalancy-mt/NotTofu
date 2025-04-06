@@ -1,0 +1,178 @@
+{
+  "test_run": {
+    "id": 2,
+    "name": "Complex Device Test",
+    "device_id": "TEST-DEV-001",
+    "serial_number": "SN123456",
+    "status": "FAILED",
+    "start_time": "2025-04-05T18:47:35.712714",
+    "end_time": "2025-04-05T18:47:49.259942",
+    "duration": 13.54722785949707,
+    "metadata": {
+      "version": "2.0.0",
+      "operator": "Automated System",
+      "test_type": "Production",
+      "firmware_version": "1.5.2",
+      "hardware_revision": "B",
+      "test_suite": "Full Qualification"
+    }
+  },
+  "phases": [
+    {
+      "name": "Power-On Test",
+      "description": "Verify device powers on correctly",
+      "status": "PASSED",
+      "start_time": "2025-04-05T18:47:37.756444",
+      "end_time": "2025-04-05T18:47:39.757006",
+      "duration": 2.0005621910095215,
+      "measurements": {
+        "Input Voltage": {
+          "value": 11.992243619686946,
+          "unit": "V",
+          "expected": "12.0V \u00b1 0.2V",
+          "limits": {
+            "min": 11.8,
+            "max": 12.2
+          },
+          "status": "PASS"
+        },
+        "Input Current": {
+          "value": 0.5987902210794271,
+          "unit": "A",
+          "expected": "0.5A \u00b1 0.1A",
+          "limits": {
+            "min": 0.4,
+            "max": 0.6
+          },
+          "status": "PASS"
+        },
+        "Boot Time": {
+          "value": 3.9087334046086055,
+          "unit": "s",
+          "expected": "< 4.0s",
+          "limits": {
+            "max": 4.0
+          },
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "name": "Calibration",
+      "description": "Calibrate device sensors",
+      "status": "PASSED",
+      "start_time": "2025-04-05T18:47:39.757375",
+      "end_time": "2025-04-05T18:47:42.757865",
+      "duration": 3.0004899501800537,
+      "measurements": {
+        "Temperature Sensor Offset": {
+          "value": 0.14850485077384729,
+          "unit": "\u00b0C",
+          "expected": "\u00b10.2\u00b0C",
+          "limits": {
+            "min": -0.2,
+            "max": 0.2
+          },
+          "status": "PASS"
+        },
+        "Pressure Sensor Offset": {
+          "value": 0.5153598841696498,
+          "unit": "hPa",
+          "expected": "\u00b11.0hPa",
+          "limits": {
+            "min": -1.0,
+            "max": 1.0
+          },
+          "status": "PASS"
+        },
+        "Humidity Sensor Offset": {
+          "value": -1.0278499370649445,
+          "unit": "%RH",
+          "expected": "\u00b12.0%RH",
+          "limits": {
+            "min": -2.0,
+            "max": 2.0
+          },
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "name": "Functional Test",
+      "description": "Verify core device functionality",
+      "status": "PASSED",
+      "start_time": "2025-04-05T18:47:42.758238",
+      "end_time": "2025-04-05T18:47:46.759202",
+      "duration": 4.000964641571045,
+      "measurements": {
+        "Display Test": {
+          "value": "PASS",
+          "unit": null,
+          "expected": "PASS",
+          "limits": null,
+          "status": "PASS"
+        },
+        "Button Test": {
+          "value": "4/5 buttons working",
+          "unit": null,
+          "expected": "5/5 buttons working",
+          "limits": null,
+          "status": "PASS"
+        },
+        "Communication Latency": {
+          "value": 70.88432139457612,
+          "unit": "ms",
+          "expected": "< 75ms",
+          "limits": {
+            "max": 75
+          },
+          "status": "PASS"
+        },
+        "Storage Write Speed": {
+          "value": 12.558075561718987,
+          "unit": "MB/s",
+          "expected": "> 12 MB/s",
+          "limits": {
+            "min": 12
+          },
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "name": "Environmental Test",
+      "description": "Test device under various environmental conditions",
+      "status": "FAILED",
+      "start_time": "2025-04-05T18:47:46.759611",
+      "end_time": "2025-04-05T18:47:49.259934",
+      "duration": 2.5003230571746826,
+      "measurements": {
+        "High Temperature Operation": {
+          "value": 46.100089361131275,
+          "unit": "\u00b0C",
+          "expected": "Functional up to 45\u00b0C",
+          "limits": {
+            "max": 45
+          },
+          "status": "FAIL"
+        },
+        "High Humidity Operation": {
+          "value": 88.06285510233722,
+          "unit": "%RH",
+          "expected": "Functional up to 85%RH",
+          "limits": {
+            "max": 85
+          },
+          "status": "FAIL"
+        },
+        "Vibration Test": {
+          "value": "PASS",
+          "unit": null,
+          "expected": "PASS",
+          "limits": null,
+          "status": "PASS"
+        }
+      }
+    }
+  ]
+}

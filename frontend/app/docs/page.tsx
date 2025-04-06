@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { BookOpenIcon, CodeBracketIcon, UserIcon } from '@heroicons/react/24/outline'
+import { BookOpenIcon, CodeBracketIcon, UserIcon, ChartBarIcon } from '@heroicons/react/24/outline'
 
 export default function DocsPage() {
   const [activeTab, setActiveTab] = useState('user')
@@ -149,12 +149,10 @@ export default function DocsPage() {
                 Overview of the NotTofu system architecture and components.
               </p>
               <a 
-                href="https://github.com/scuba/code/tofu/blob/main/docs/architecture/system_overview.md" 
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/docs/technical" 
                 className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
               >
-                View on GitHub →
+                View Interactive Diagrams →
               </a>
             </div>
           </div>
@@ -167,12 +165,10 @@ export default function DocsPage() {
                 Details about the frontend components, structure, and design.
               </p>
               <a 
-                href="https://github.com/scuba/code/tofu/blob/main/docs/architecture/frontend_architecture.md" 
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/docs/technical#frontend-architecture" 
                 className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
               >
-                View on GitHub →
+                View Interactive Diagrams →
               </a>
             </div>
           </div>
@@ -185,12 +181,10 @@ export default function DocsPage() {
                 Documentation of the data models and their relationships.
               </p>
               <a 
-                href="https://github.com/scuba/code/tofu/blob/main/docs/data/entity_relationships.md" 
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/docs/technical#data-model" 
                 className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
               >
-                View on GitHub →
+                View Interactive Diagrams →
               </a>
             </div>
           </div>
@@ -203,12 +197,10 @@ export default function DocsPage() {
                 Documentation of the API endpoints and usage patterns.
               </p>
               <a 
-                href="https://github.com/scuba/code/tofu/blob/main/docs/api/api_flow.md" 
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/docs/technical#api-flow" 
                 className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
               >
-                View on GitHub →
+                View Interactive Diagrams →
               </a>
             </div>
           </div>
@@ -221,12 +213,10 @@ export default function DocsPage() {
                 Check out our development roadmap and upcoming features.
               </p>
               <a 
-                href="https://github.com/scuba/code/tofu/blob/main/docs/roadmap.md" 
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/docs/technical#roadmap" 
                 className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
               >
-                View on GitHub →
+                View Interactive Diagrams →
               </a>
             </div>
           </div>

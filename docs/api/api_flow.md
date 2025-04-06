@@ -9,13 +9,13 @@ sequenceDiagram
     participant DB as Database
 
     %% Test Runs List Flow
-    Client->>API: GET /api/test-runs
+    Client->>API: GET /api/runs
     API->>DB: Query test runs with pagination
     DB-->>API: Return test runs data
     API-->>Client: JSON response with test runs
 
     %% Test Run Detail Flow
-    Client->>API: GET /api/test-runs/{id}
+    Client->>API: GET /api/runs/{id}
     API->>DB: Query test run by ID
     DB-->>API: Return test run data
     API->>DB: Query phases for this test run
@@ -29,13 +29,50 @@ sequenceDiagram
     API->>DB: Query recent test runs for this station
     DB-->>API: Return test runs data
     API-->>Client: JSON response with station and test runs
+    
+    %% API Status Check
+    Client->>API: GET /api/status
+    API-->>Client: Return API health status
+```
+
+## API Endpoint Structure
+
+```mermaid
+graph TB
+    API[API Root]
+    
+    Runs[/runs]
+    RunById[/runs/{id}]
+    RunPhases[/runs/{id}/phases]
+    
+    Stations[/stations]
+    StationById[/stations/{id}]
+    StationRuns[/stations/{id}/runs]
+    
+    Procedures[/procedures]
+    ProcedureById[/procedures/{id}]
+    
+    Status[/status]
+    
+    API --> Runs
+    API --> RunById
+    API --> RunPhases
+    
+    API --> Stations
+    API --> StationById
+    API --> StationRuns
+    
+    API --> Procedures
+    API --> ProcedureById
+    
+    API --> Status
 ```
 
 ## Data Retrieval Patterns
 
 ### Listing Test Runs
 ```
-GET /api/test-runs
+GET /api/runs
 ```
 
 **Query Parameters:**
@@ -75,7 +112,7 @@ GET /api/test-runs
 
 ### Retrieving Test Run Details
 ```
-GET /api/test-runs/{id}
+GET /api/runs/{id}
 ```
 
 **Response:**
@@ -137,6 +174,48 @@ GET /api/stations/{id}
 }
 ```
 
+### API Status Check
+```
+GET /api/status
+```
+
+**Response:**
+```json
+{
+  "status": "operational",
+  "version": "1.0.0",
+  "uptime": "10d 5h 30m",
+  "services": {
+    "database": "connected",
+    "storage": "connected",
+    "cache": "connected"
+  },
+  "latency": {
+    "database": "15ms",
+    "api": "45ms"
+  }
+}
+```
+
+## Known Issues and Resolutions
+
+### 404 Errors for Test Runs
+
+Currently, the system logs show 404 errors when accessing `/test-runs/` endpoints:
+
+```
+::1 - - [05/Apr/2025 19:54:56] code 404, message File not found
+::1 - - [05/Apr/2025 19:54:56] "GET /test-runs/ HTTP/1.1" 404 -
+```
+
+**Resolution:** 
+The API endpoint path should be updated to use `/runs/` instead of `/test-runs/`. The frontend should be updated to align with this endpoint structure. All references to "test-runs" in frontend code should be changed to "runs" to match the backend API structure.
+
+```diff
+- fetch('/api/test-runs')
++ fetch('/api/runs')
+```
+
 ## Planned API Extensions
 
 ```mermaid
@@ -154,7 +233,7 @@ sequenceDiagram
     API->>API: Validate JWT token
     
     %% Export Flow
-    Client->>API: POST /api/export/test-runs
+    Client->>API: POST /api/export/runs
     API->>Export: Generate export file
     Export->>DB: Query required data
     DB-->>Export: Return data
@@ -162,7 +241,7 @@ sequenceDiagram
     API-->>Client: Return download link
     
     %% Real-time Updates
-    Client->>API: SUBSCRIBE /api/events/test-runs
+    Client->>API: SUBSCRIBE /api/events/runs
     API-->>Client: Establish WebSocket connection
     Note over API,Client: Real-time updates flow
     DB->>API: Test run status changed
@@ -171,10 +250,11 @@ sequenceDiagram
 
 ## Implementation Status
 
-- ✅ Test runs listing and filtering
-- ✅ Test run details
+- ✅ Runs listing and filtering
+- ✅ Run details
 - ✅ Station details
 - ✅ Test phases within runs
+- ✅ API status endpoint
 - 🔄 Advanced filtering and search
 - ⏳ Authentication and authorization
 - ⏳ Data export functionality

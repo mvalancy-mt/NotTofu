@@ -1,71 +1,142 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { DocumentTextIcon, ClockIcon, ComputerDesktopIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
+import ApiStatus from './status'
+import { API_URL, API_ENDPOINTS, DATA_REFRESH_INTERVAL, API_REQUEST_TIMEOUT } from '../config'
 
-const testRuns = [
-  {
-    id: '1001',
-    timestamp: '2023-05-01T10:24:00Z',
-    duration: '45 min',
-    status: 'success',
-    station: 'STA1',
-    procedure: 'FVT1',
-    procedureName: 'Final Verification Test'
-  },
-  {
-    id: '1000',
-    timestamp: '2023-05-01T09:12:00Z',
-    duration: '47 min',
-    status: 'success',
-    station: 'STA1',
-    procedure: 'ICT2',
-    procedureName: 'In-Circuit Test'
-  },
-  {
-    id: '999',
-    timestamp: '2023-04-30T16:30:00Z',
-    duration: '52 min',
-    status: 'failure',
-    station: 'STA2',
-    procedure: 'ICT2',
-    procedureName: 'In-Circuit Test'
-  },
-  {
-    id: '998',
-    timestamp: '2023-04-30T14:15:00Z',
-    duration: '48 min',
-    status: 'success',
-    station: 'STA2',
-    procedure: 'FCT3',
-    procedureName: 'Functional Circuit Test'
-  },
-  {
-    id: '997',
-    timestamp: '2023-04-30T11:42:00Z',
-    duration: '50 min',
-    status: 'success',
-    station: 'STA1',
-    procedure: 'FVT1',
-    procedureName: 'Final Verification Test'
-  }
-]
+// Define the test run interface
+interface TestRun {
+  id: number;
+  name: string;
+  uut_id: string;
+  uut_serial: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  meta_data?: Record<string, any>;
+}
 
 export default function TestRunsPage() {
+  const [testRuns, setTestRuns] = useState<TestRun[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Function to fetch test runs from the backend
+  const fetchTestRuns = async () => {
+    try {
+      setLoading(true);
+      const apiEndpoint = `${API_URL}${API_ENDPOINTS.testRuns}`;
+      console.log(`Fetching test runs from ${apiEndpoint}...`);
+      
+      const response = await fetch(apiEndpoint, {
+        cache: 'no-store', // Prevent caching
+        signal: AbortSignal.timeout(API_REQUEST_TIMEOUT) // Set timeout
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error fetching test runs: ${response.status} ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      console.log('Received test runs:', data.length);
+      
+      // Normalize data to ensure it matches our expected format
+      const normalizedData = data.map((run: any) => ({
+        id: run.id,
+        name: run.name || 'Unnamed Test',
+        uut_id: run.uut_id || 'No Device ID',
+        uut_serial: run.uut_serial || 'No Serial',
+        status: (run.status || 'unknown').toLowerCase(),
+        created_at: run.created_at || new Date().toISOString(),
+        updated_at: run.updated_at || new Date().toISOString(),
+        meta_data: run.meta_data || {}
+      }));
+      
+      // Sort by most recent first
+      normalizedData.sort((a: TestRun, b: TestRun) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      
+      setTestRuns(normalizedData);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to fetch test runs:', err);
+      setError(`Failed to load test runs. Please check that the backend server is running at ${API_URL}.`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch test runs on component mount and set up auto-refresh interval
+  useEffect(() => {
+    fetchTestRuns();
+    
+    // Set up auto-refresh interval
+    const refreshInterval = setInterval(() => {
+      fetchTestRuns();
+    }, DATA_REFRESH_INTERVAL);
+    
+    // Clean up interval on component unmount
+    return () => clearInterval(refreshInterval);
+  }, []);
+
+  // Function to format timestamp
+  const formatDateTime = (timestamp: string) => {
+    try {
+      return new Date(timestamp).toLocaleString();
+    } catch (error) {
+      console.error('Invalid timestamp:', timestamp);
+      return 'Invalid date';
+    }
+  };
+
+  // Function to get status display elements
+  const getStatusDisplay = (status: string) => {
+    const statusText = status.toUpperCase();
+    
+    if (statusText === 'PASSED' || statusText === 'PENDING') {
+      return (
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+          <CheckCircleIcon className="mr-1 h-4 w-4" />
+          {statusText}
+        </span>
+      );
+    } else if (statusText === 'RUNNING') {
+      return (
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+          <ClockIcon className="mr-1 h-4 w-4" />
+          {statusText}
+        </span>
+      );
+    } else {
+      return (
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+          <XCircleIcon className="mr-1 h-4 w-4" />
+          {statusText}
+        </span>
+      );
+    }
+  };
+
   return (
-    <div className="space-y-8">
+    <div className="p-4 space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900">Test Runs</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Test Runs</h1>
         <p className="mt-1 text-sm text-gray-500">
           View and manage all test runs across your stations.
         </p>
       </div>
+      
+      {/* API Status */}
+      <ApiStatus />
 
       {/* Filters */}
       <div className="bg-white shadow rounded-lg border border-gray-200">
-        <div className="px-4 py-5 sm:p-6">
-          <h2 className="text-base font-semibold leading-6 text-gray-900 mb-4">Filters</h2>
+        <div className="p-4">
+          <h2 className="text-base font-semibold text-gray-900 mb-4">Filters</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
             <div className="col-span-1">
               <label htmlFor="station" className="block text-sm font-medium text-gray-700">
@@ -74,13 +145,14 @@ export default function TestRunsPage() {
               <select
                 id="station"
                 name="station"
-                className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-base"
               >
                 <option value="">All Stations</option>
                 <option value="STA1">STA1</option>
                 <option value="STA2">STA2</option>
               </select>
             </div>
+            
             <div className="col-span-1">
               <label htmlFor="procedure" className="block text-sm font-medium text-gray-700">
                 Procedure
@@ -88,7 +160,7 @@ export default function TestRunsPage() {
               <select
                 id="procedure"
                 name="procedure"
-                className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-base"
               >
                 <option value="">All Procedures</option>
                 <option value="FVT1">Final Verification Test</option>
@@ -96,6 +168,7 @@ export default function TestRunsPage() {
                 <option value="FCT3">Functional Circuit Test</option>
               </select>
             </div>
+            
             <div className="col-span-1">
               <label htmlFor="status" className="block text-sm font-medium text-gray-700">
                 Status
@@ -103,115 +176,115 @@ export default function TestRunsPage() {
               <select
                 id="status"
                 name="status"
-                className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+                className="mt-1 block w-full rounded-md border border-gray-300 p-2 text-base"
               >
                 <option value="">All Statuses</option>
-                <option value="success">Success</option>
-                <option value="failure">Failure</option>
+                <option value="passed">Passed</option>
+                <option value="failed">Failed</option>
               </select>
             </div>
-            <div className="col-span-1">
-              <label htmlFor="date-range" className="block text-sm font-medium text-gray-700">
-                Date Range
-              </label>
-              <select
-                id="date-range"
-                name="date-range"
-                className="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+            
+            <div className="col-span-1 flex items-end">
+              <button
+                type="button"
+                onClick={fetchTestRuns}
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
               >
-                <option value="today">Today</option>
-                <option value="yesterday">Yesterday</option>
-                <option value="last-7-days">Last 7 Days</option>
-                <option value="last-30-days">Last 30 Days</option>
-                <option value="custom">Custom Range</option>
-              </select>
+                Apply Filters
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       {/* Test Runs Table */}
-      <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow">
-        <div className="border-b border-gray-200 bg-gray-50 px-4 py-5 sm:px-6">
-          <h2 className="text-base font-semibold leading-6 text-gray-900">Recent Test Runs</h2>
+      <div className="bg-white shadow rounded-lg border border-gray-200">
+        <div className="border-b border-gray-200 bg-gray-50 p-4 flex justify-between items-center">
+          <h2 className="text-base font-semibold text-gray-900">Recent Test Runs</h2>
+          <button 
+            onClick={fetchTestRuns} 
+            className="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Refresh
+          </button>
         </div>
-        <div className="px-4 py-5 sm:p-6">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-300">
-              <thead>
-                <tr>
-                  <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
-                    Run ID
-                  </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                    Timestamp
-                  </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                    Procedure
-                  </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                    Station
-                  </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                    Duration
-                  </th>
-                  <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                    Status
-                  </th>
-                  <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-0">
-                    <span className="sr-only">View</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {testRuns.map((run) => (
-                  <tr key={run.id}>
-                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-blue-600 sm:pl-0">
-                      <Link href={`/runs/${run.id}`}>{run.id}</Link>
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      <div className="flex items-center">
-                        <ClockIcon className="mr-1.5 h-4 w-4 flex-shrink-0 text-gray-400" />
-                        {new Date(run.timestamp).toLocaleString()}
-                      </div>
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      <div className="flex items-center">
-                        <DocumentTextIcon className="mr-1.5 h-4 w-4 flex-shrink-0 text-gray-400" />
-                        {run.procedureName}
-                      </div>
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      <div className="flex items-center">
-                        <ComputerDesktopIcon className="mr-1.5 h-4 w-4 flex-shrink-0 text-gray-400" />
-                        {run.station}
-                      </div>
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{run.duration}</td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm">
-                      {run.status === 'success' ? (
-                        <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700">
-                          <CheckCircleIcon className="mr-1 h-4 w-4 text-green-400" />
-                          Success
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-700">
-                          <XCircleIcon className="mr-1 h-4 w-4 text-red-400" />
-                          Failure
-                        </span>
-                      )}
-                    </td>
-                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                      <Link href={`/runs/${run.id}`} className="text-blue-600 hover:text-blue-900">
-                        View<span className="sr-only">, run {run.id}</span>
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
           </div>
-        </div>
+        ) : error ? (
+          <div className="p-4 text-center text-red-600">{error}</div>
+        ) : testRuns.length === 0 ? (
+          <div className="p-4 text-center text-gray-500">No test runs found.</div>
+        ) : (
+          <div className="p-4">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-300">
+                <thead>
+                  <tr>
+                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
+                      Run ID
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      Name
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      Device ID
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      Serial Number
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      Timestamp
+                    </th>
+                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                      Status
+                    </th>
+                    <th scope="col" className="relative py-3.5 pl-3 pr-4">
+                      <span className="sr-only">View</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {testRuns.map((run) => (
+                    <tr key={run.id} className="hover:bg-gray-50">
+                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-blue-600">
+                        <Link href={`/runs/${run.id}`}>{run.id}</Link>
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {run.name}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {run.uut_id}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        {run.uut_serial}
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        <div className="flex items-center">
+                          <ClockIcon className="mr-1.5 h-4 w-4 flex-shrink-0 text-gray-400" />
+                          {formatDateTime(run.created_at)}
+                        </div>
+                      </td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm">
+                        {getStatusDisplay(run.status)}
+                      </td>
+                      <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium">
+                        <Link href={`/runs/${run.id}`} className="text-blue-600 hover:text-blue-900">
+                          View<span className="sr-only">, {run.id}</span>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

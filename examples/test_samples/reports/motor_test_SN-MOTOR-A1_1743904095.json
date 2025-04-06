@@ -1,0 +1,267 @@
+{
+  "test_run": {
+    "id": 3,
+    "device_id": "MOTOR-001",
+    "serial_number": "SN-MOTOR-A1",
+    "target_rpm": 3500,
+    "start_time": "2025-04-05T18:47:55.125702",
+    "end_time": "2025-04-05T18:48:15.202260",
+    "duration": 20.076558113098145
+  },
+  "phases": [
+    {
+      "name": "Motor Startup",
+      "status": "PASSED",
+      "measurements": {
+        "startup_time": {
+          "value": 1.0546016642980425,
+          "unit": "s",
+          "limits": {
+            "max": 1.2
+          },
+          "status": "PASS"
+        },
+        "startup_current": {
+          "value": 1.6311489028120425,
+          "unit": "A",
+          "limits": {
+            "max": 2.0
+          },
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "name": "Speed Accuracy",
+      "status": "PASSED",
+      "measurements": {
+        "actual_rpm": {
+          "value": 3546.4730864945377,
+          "unit": "RPM",
+          "expected": 3500,
+          "status": "PASS"
+        },
+        "speed_error": {
+          "value": 1.327802471272506,
+          "unit": "%",
+          "limits": {
+            "min": -5.0,
+            "max": 5.0
+          },
+          "status": "PASS"
+        }
+      }
+    },
+    {
+      "name": "Load Performance",
+      "status": "FAILED",
+      "measurements": {
+        "load_25pct": {
+          "load_pct": 25,
+          "current": {
+            "value": 1.0911414926123113,
+            "unit": "A",
+            "limits": {
+              "max": 1.5
+            },
+            "status": "PASS"
+          },
+          "temp_rise": {
+            "value": 10.742848149056927,
+            "unit": "\u00b0C",
+            "limits": {
+              "max": 12.5
+            },
+            "status": "PASS"
+          }
+        },
+        "load_50pct": {
+          "load_pct": 50,
+          "current": {
+            "value": 2.268333067632144,
+            "unit": "A",
+            "limits": {
+              "max": 3.0
+            },
+            "status": "PASS"
+          },
+          "temp_rise": {
+            "value": 20.623509606060693,
+            "unit": "\u00b0C",
+            "limits": {
+              "max": 25.0
+            },
+            "status": "PASS"
+          }
+        },
+        "load_75pct": {
+          "load_pct": 75,
+          "current": {
+            "value": 3.4521139313140585,
+            "unit": "A",
+            "limits": {
+              "max": 4.5
+            },
+            "status": "PASS"
+          },
+          "temp_rise": {
+            "value": 37.88251856427827,
+            "unit": "\u00b0C",
+            "limits": {
+              "max": 37.5
+            },
+            "status": "FAIL"
+          }
+        },
+        "load_100pct": {
+          "load_pct": 100,
+          "current": {
+            "value": 5.1464797761360215,
+            "unit": "A",
+            "limits": {
+              "max": 6.0
+            },
+            "status": "PASS"
+          },
+          "temp_rise": {
+            "value": 48.308163058606084,
+            "unit": "\u00b0C",
+            "limits": {
+              "max": 50.0
+            },
+            "status": "PASS"
+          }
+        }
+      }
+    },
+    {
+      "name": "Durability Test",
+      "status": "PASSED",
+      "measurements": {
+        "durability": {
+          "value": "10/10 cycles passed",
+          "cycles_run": 10,
+          "cycles_failed": 0,
+          "status": "PASS"
+        }
+      }
+    }
+  ],
+  "measurements": {
+    "startup_time": {
+      "value": 1.0546016642980425,
+      "unit": "s",
+      "limits": {
+        "max": 1.2
+      },
+      "status": "PASS"
+    },
+    "startup_current": {
+      "value": 1.6311489028120425,
+      "unit": "A",
+      "limits": {
+        "max": 2.0
+      },
+      "status": "PASS"
+    },
+    "actual_rpm": {
+      "value": 3546.4730864945377,
+      "unit": "RPM",
+      "expected": 3500,
+      "status": "PASS"
+    },
+    "speed_error": {
+      "value": 1.327802471272506,
+      "unit": "%",
+      "limits": {
+        "min": -5.0,
+        "max": 5.0
+      },
+      "status": "PASS"
+    },
+    "load_test": {
+      "load_25pct": {
+        "load_pct": 25,
+        "current": {
+          "value": 1.0911414926123113,
+          "unit": "A",
+          "limits": {
+            "max": 1.5
+          },
+          "status": "PASS"
+        },
+        "temp_rise": {
+          "value": 10.742848149056927,
+          "unit": "\u00b0C",
+          "limits": {
+            "max": 12.5
+          },
+          "status": "PASS"
+        }
+      },
+      "load_50pct": {
+        "load_pct": 50,
+        "current": {
+          "value": 2.268333067632144,
+          "unit": "A",
+          "limits": {
+            "max": 3.0
+          },
+          "status": "PASS"
+        },
+        "temp_rise": {
+          "value": 20.623509606060693,
+          "unit": "\u00b0C",
+          "limits": {
+            "max": 25.0
+          },
+          "status": "PASS"
+        }
+      },
+      "load_75pct": {
+        "load_pct": 75,
+        "current": {
+          "value": 3.4521139313140585,
+          "unit": "A",
+          "limits": {
+            "max": 4.5
+          },
+          "status": "PASS"
+        },
+        "temp_rise": {
+          "value": 37.88251856427827,
+          "unit": "\u00b0C",
+          "limits": {
+            "max": 37.5
+          },
+          "status": "FAIL"
+        }
+      },
+      "load_100pct": {
+        "load_pct": 100,
+        "current": {
+          "value": 5.1464797761360215,
+          "unit": "A",
+          "limits": {
+            "max": 6.0
+          },
+          "status": "PASS"
+        },
+        "temp_rise": {
+          "value": 48.308163058606084,
+          "unit": "\u00b0C",
+          "limits": {
+            "max": 50.0
+          },
+          "status": "PASS"
+        }
+      }
+    },
+    "durability": {
+      "value": "10/10 cycles passed",
+      "cycles_run": 10,
+      "cycles_failed": 0,
+      "status": "PASS"
+    }
+  }
+}

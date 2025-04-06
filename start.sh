@@ -1,55 +1,72 @@
 #!/bin/bash
 
 # NotTofu Startup Script for Linux/Mac
-echo -e "\033[1;36mStarting NotTofu...\033[0m"
+echo -e "\033[1;36mStarting NotTofu Application...\033[0m"
+echo
 
-# Check if npx is available (part of npm)
-if ! command -v npx &> /dev/null; then
-    echo -e "\033[1;31mError: npx command not found. Please install Node.js and npm.\033[0m"
-    exit 1
+# Define default ports
+BACKEND_PORT=8000
+FRONTEND_PORT=3000
+
+# Parse command line arguments
+if [ ! -z "$1" ]; then
+    BACKEND_PORT=$1
+fi
+if [ ! -z "$2" ]; then
+    FRONTEND_PORT=$2
 fi
 
-# Check if concurrently is installed
-if ! npx concurrently --version &> /dev/null; then
-    echo -e "\033[1;33mInstalling concurrently package...\033[0m"
-    npm install -g concurrently
-    if [ $? -ne 0 ]; then
-        echo -e "\033[1;31mFailed to install concurrently. Please run 'npm install -g concurrently' manually.\033[0m"
-        exit 1
-    fi
-fi
+echo -e "\033[1;33mConfiguration:\033[0m"
+echo -e "- Backend port: \033[1;34m$BACKEND_PORT\033[0m"
+echo -e "- Frontend port: \033[1;34m$FRONTEND_PORT\033[0m"
+echo
 
-# Check if frontend/node_modules exists
-if [ ! -d "frontend/node_modules" ]; then
-    echo -e "\033[1;33mSetting up project for first run...\033[0m"
+# Check if backend is already running
+if netstat -tuln 2>/dev/null | grep "LISTEN" | grep ":$BACKEND_PORT " > /dev/null; then
+    echo -e "\033[1;33mBackend appears to be already running on port $BACKEND_PORT.\033[0m"
+    echo -e "\033[1;33mIf you want to restart it, please stop the current instance first.\033[0m"
+    echo
+else
+    echo -e "\033[1;36mStarting backend server on port $BACKEND_PORT...\033[0m"
+    # Use nohup to keep the process running after the terminal is closed
+    chmod +x run_backend.sh
+    nohup ./run_backend.sh $BACKEND_PORT > backend.log 2>&1 &
+    BACKEND_PID=$!
+    echo -e "\033[1;32mBackend server started with PID $BACKEND_PID\033[0m"
+    echo
     
-    # Install root dependencies
-    echo -e "\033[1;36mInstalling root dependencies...\033[0m"
-    npm install
-    if [ $? -ne 0 ]; then
-        echo -e "\033[1;31mFailed to install dependencies. Please run setup.sh manually.\033[0m"
-        exit 1
-    fi
-    
-    # Install frontend dependencies
-    echo -e "\033[1;36mInstalling frontend dependencies...\033[0m"
-    cd frontend
-    npm install
-    if [ $? -ne 0 ]; then
-        echo -e "\033[1;31mFailed to install frontend dependencies.\033[0m"
-        cd ..
-        exit 1
-    fi
-    cd ..
+    # Wait a moment for backend to initialize
+    sleep 3
 fi
 
-# Make executable
-chmod +x start.sh
+# Check if frontend is already running
+if netstat -tuln 2>/dev/null | grep "LISTEN" | grep ":$FRONTEND_PORT " > /dev/null; then
+    echo -e "\033[1;33mFrontend appears to be already running on port $FRONTEND_PORT.\033[0m"
+    echo -e "\033[1;33mIf you want to restart it, please stop the current instance first.\033[0m"
+    echo
+else
+    echo -e "\033[1;36mStarting frontend development server on port $FRONTEND_PORT...\033[0m"
+    # Use nohup to keep the process running after the terminal is closed
+    chmod +x run_frontend.sh
+    nohup ./run_frontend.sh $FRONTEND_PORT > frontend.log 2>&1 &
+    FRONTEND_PID=$!
+    echo -e "\033[1;32mFrontend server started with PID $FRONTEND_PID\033[0m"
+    echo
+fi
 
-# Run both servers
-echo -e "\n\033[1;32mStarting NotTofu servers...\033[0m"
-echo -e "\033[1;36mBackend running on port 3001, Frontend on port 3000\033[0m"
-echo -e "\033[1;33mPress Ctrl+C to stop all servers\033[0m\n"
+echo -e "\033[1;32mNotTofu application is starting up!\033[0m"
+echo
+echo -e "You can access:"
+echo -e "- Frontend: \033[1;34mhttp://localhost:$FRONTEND_PORT\033[0m"
+echo -e "- Backend API: \033[1;34mhttp://localhost:$BACKEND_PORT\033[0m"
+echo
+echo -e "Check \033[1;33mbackend.log\033[0m and \033[1;33mfrontend.log\033[0m for output"
+echo
+echo -e "To stop the servers, run: \033[1;33mkill $BACKEND_PID $FRONTEND_PID\033[0m"
 
-# Start the servers
-npx concurrently --kill-others --prefix "[{name}]" --names "BACKEND,FRONTEND" --prefix-colors "cyan.bold,green.bold" "npm run dev:root" "npm run dev:frontend" 
+# If running in background, show how to view logs
+if ! command -v gnome-terminal &>/dev/null && ! command -v konsole &>/dev/null && ! command -v xterm &>/dev/null && ! (command -v open &>/dev/null && [ "$(uname)" == "Darwin" ]); then
+    echo -e "To view backend logs: \033[1;33mtail -f backend.log\033[0m"
+    echo -e "To view frontend logs: \033[1;33mtail -f frontend.log\033[0m"
+    echo
+fi 

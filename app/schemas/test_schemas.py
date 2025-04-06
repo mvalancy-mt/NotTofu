@@ -37,6 +37,7 @@ class TestPhaseBase(BaseModel):
 
 class TestPhaseCreate(TestPhaseBase):
     test_run_id: int
+    status: str = "PENDING"  # Allow string status values
 
 class TestPhase(TestPhaseBase):
     id: int
