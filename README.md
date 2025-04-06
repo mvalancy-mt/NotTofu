@@ -1,7 +1,7 @@
 # NotTofu - Simple Todo Application
 
 <div align="center">
-  <img src="frontend/public/Logo_NotTofu_128.png" alt="NotTofu Logo" width="150" />
+  <img src="Logo.png" alt="NotTofu Logo" width="150" />
 </div>
 
 ## Quick Start
