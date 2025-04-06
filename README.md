@@ -1,4 +1,4 @@
-# NotTofu - Simple Todo Application
+# NotTofu - Hardware Test Automation Manager
 
 <div align="center">
   <img src="Logo.png" alt="NotTofu Logo" width="150" />
